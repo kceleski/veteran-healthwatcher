@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { format, addDays, isAfter, isBefore, isToday } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layouts/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { getAppointmentsForVeteran, updateAppointmentStatus } from "@/lib/mockAP
 
 const VeteranAppointments = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] = useState<string | null>(null);
 
@@ -53,6 +54,8 @@ const VeteranAppointments = () => {
       description: "Connecting to your virtual appointment...",
       duration: 3000,
     });
+    
+    navigate(`/veteran/video-call/${appointmentId}`);
   };
 
   const upcomingAppointments = appointments?.filter(app => 
@@ -85,7 +88,6 @@ const VeteranAppointments = () => {
   return (
     <AppLayout title="Appointments">
       <div className="grid gap-6">
-        {/* Today's appointments summary */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -192,7 +194,6 @@ const VeteranAppointments = () => {
           </CardContent>
         </Card>
         
-        {/* All appointments */}
         <Tabs defaultValue="upcoming" className="w-full">
           <TabsList className="grid grid-cols-2 mb-4">
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
@@ -366,7 +367,6 @@ const VeteranAppointments = () => {
         </Tabs>
       </div>
 
-      {/* Cancel Appointment Dialog */}
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <DialogContent>
           <DialogHeader>

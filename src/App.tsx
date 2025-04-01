@@ -14,6 +14,7 @@ import VeteranSymptoms from "./pages/veteran/Symptoms";
 import VeteranAppointments from "./pages/veteran/Appointments";
 import VeteranMessages from "./pages/veteran/Messages";
 import VeteranResources from "./pages/veteran/Resources";
+import VeteranVideoCall from "./pages/veteran/VideoCall";
 import ClinicianDashboard from "./pages/clinician/Dashboard";
 import ClinicianPatient from "./pages/clinician/Patient";
 import ClinicianAlerts from "./pages/clinician/Alerts";
@@ -21,6 +22,7 @@ import ClinicianTreatment from "./pages/clinician/Treatment";
 import ClinicianAnalytics from "./pages/clinician/Analytics";
 import ClinicianMessages from "./pages/clinician/Messages";
 import ClinicianVista from "./pages/clinician/Vista";
+import ClinicianVideoCall from "./pages/clinician/VideoCall";
 import React from "react";
 
 const App = () => {
@@ -45,6 +47,7 @@ const App = () => {
               <Route path="/veteran/appointments" element={<VeteranAppointments />} />
               <Route path="/veteran/messages" element={<VeteranMessages />} />
               <Route path="/veteran/resources" element={<VeteranResources />} />
+              <Route path="/veteran/video-call/:appointmentId" element={<VeteranVideoCall />} />
               
               {/* Clinician Routes */}
               <Route path="/clinician/dashboard" element={<ClinicianDashboard />} />
@@ -54,6 +57,7 @@ const App = () => {
               <Route path="/clinician/analytics" element={<ClinicianAnalytics />} />
               <Route path="/clinician/messages" element={<ClinicianMessages />} />
               <Route path="/clinician/vista" element={<ClinicianVista />} />
+              <Route path="/clinician/video-call/:appointmentId" element={<ClinicianVideoCall />} />
               
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />
