@@ -19,6 +19,7 @@ import ClinicianDashboard from "./pages/clinician/Dashboard";
 import ClinicianPatient from "./pages/clinician/Patient";
 import ClinicianAlerts from "./pages/clinician/Alerts";
 import ClinicianTreatment from "./pages/clinician/Treatment";
+import ClinicianBehavioralHealth from "./pages/clinician/BehavioralHealth";
 import ClinicianAnalytics from "./pages/clinician/Analytics";
 import ClinicianMessages from "./pages/clinician/Messages";
 import ClinicianVista from "./pages/clinician/Vista";
@@ -54,6 +55,7 @@ const App = () => {
               <Route path="/clinician/patient/:id" element={<ClinicianPatient />} />
               <Route path="/clinician/alerts" element={<ClinicianAlerts />} />
               <Route path="/clinician/treatment" element={<ClinicianTreatment />} />
+              <Route path="/clinician/behavioral-health" element={<ClinicianBehavioralHealth />} />
               <Route path="/clinician/analytics" element={<ClinicianAnalytics />} />
               <Route path="/clinician/messages" element={<ClinicianMessages />} />
               <Route path="/clinician/vista" element={<ClinicianVista />} />

@@ -31,7 +31,7 @@ const Index = () => {
             />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl mb-4">
-            VetGuardian <span className="text-blue-600">Health</span>
+            VetGuardian <span className="text-primary">Health</span>
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             Advanced telehealth monitoring powered by AVA AI, helping veterans live healthier lives through continuous health tracking and early intervention.
@@ -48,7 +48,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <div className="h-40 bg-blue-50 rounded-md flex items-center justify-center">
-                <svg className="h-20 w-20 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="h-20 w-20 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>

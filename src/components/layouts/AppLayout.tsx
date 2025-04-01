@@ -29,8 +29,10 @@ import {
   LogOut, 
   Settings,
   HelpCircle,
-  Bell
+  Bell,
+  Brain
 } from "lucide-react";
+import AvaAIChatbot from "../AvaAIChatbot";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -52,6 +54,7 @@ const ClinicianNavItems = [
   { name: "Dashboard", path: "/clinician/dashboard", icon: Home },
   { name: "Alerts", path: "/clinician/alerts", icon: AlertCircle },
   { name: "Treatment", path: "/clinician/treatment", icon: FileText },
+  { name: "Behavioral Health", path: "/clinician/behavioral-health", icon: Brain },
   { name: "Analytics", path: "/clinician/analytics", icon: BarChart2 },
   { name: "Messages", path: "/clinician/messages", icon: MessageSquare },
   { name: "VistA", path: "/clinician/vista", icon: Database },
@@ -218,6 +221,11 @@ export default function AppLayout({ children, title, showNav = true }: AppLayout
               <h1 className="text-2xl font-bold mb-6">{title}</h1>
             )}
             {children}
+          </div>
+          
+          {/* AVA AI Chatbot - positioned at bottom right */}
+          <div className="fixed bottom-4 right-4 z-40">
+            <AvaAIChatbot label="Ask AVA for help" description="Your AI health assistant" />
           </div>
         </main>
       </div>
