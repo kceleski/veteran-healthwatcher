@@ -214,3 +214,71 @@ export const loginUser = async (credentials: { username: string; password: strin
   
   throw new Error('Invalid credentials');
 };
+
+// New functions for treatment planning and patient searching
+
+// Search for patients by name, ID, or condition
+export const searchPatients = async (query: string): Promise<Veteran[]> => {
+  await simulateDelay();
+  await simulateError();
+  
+  if (!query) return [];
+  
+  const normalizedQuery = query.toLowerCase();
+  
+  return mockVeterans.filter(veteran => 
+    veteran.name.toLowerCase().includes(normalizedQuery) ||
+    veteran.id.toLowerCase().includes(normalizedQuery) ||
+    veteran.conditions.some(condition => condition.toLowerCase().includes(normalizedQuery))
+  );
+};
+
+// Interface for care plan operations
+interface CarePlanInput {
+  patientId: string;
+  patientName: string;
+  condition: string;
+  goals: string;
+  medications: string;
+  notes: string;
+}
+
+export const createCarePlan = async (planData: CarePlanInput): Promise<{id: number}> => {
+  await simulateDelay();
+  await simulateError();
+  
+  // In a real app, this would create a record in the database
+  return {
+    id: Date.now()
+  };
+};
+
+export const updateCarePlan = async (planId: number, updates: Partial<CarePlanInput>): Promise<void> => {
+  await simulateDelay();
+  await simulateError();
+  
+  // In a real app, this would update a record in the database
+  console.log(`Care plan ${planId} updated with:`, updates);
+};
+
+// More detailed appointment scheduling
+interface AppointmentInput {
+  patientId: string;
+  patientName: string;
+  date: string;
+  time: string;
+  type: string;
+  provider: string;
+  location: string;
+  notes?: string;
+}
+
+export const scheduleAppointmentDetailed = async (appointmentData: AppointmentInput): Promise<{id: number}> => {
+  await simulateDelay();
+  await simulateError();
+  
+  // In a real app, this would create a record in the database
+  return {
+    id: Date.now()
+  };
+};

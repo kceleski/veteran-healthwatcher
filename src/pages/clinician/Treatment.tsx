@@ -14,9 +14,29 @@ import {
   Calendar,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
+  Search
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle,
+  DialogFooter,
+  DialogDescription
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  createCarePlan, 
+  updateCarePlan, 
+  scheduleAppointment, 
+  updateAppointmentStatus, 
+  searchPatients 
+} from "@/lib/mockAPI";
 
 // Mock data
 const carePlans = [
@@ -144,6 +164,44 @@ const ClinicianTreatment = () => {
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
   const [expandedGoals, setExpandedGoals] = useState<{[key: number]: boolean}>({});
   
+  // New state for dialogs
+  const [newPlanDialog, setNewPlanDialog] = useState(false);
+  const [editPlanDialog, setEditPlanDialog] = useState(false);
+  const [scheduleDialog, setScheduleDialog] = useState(false);
+  const [rescheduleDialog, setRescheduleDialog] = useState<number | null>(null);
+  const [viewDetailsDialog, setViewDetailsDialog] = useState<number | null>(null);
+  const [searchDialog, setSearchDialog] = useState(false);
+  
+  // Form states
+  const [newPlanForm, setNewPlanForm] = useState({
+    patientId: "",
+    patientName: "",
+    condition: "",
+    goals: "",
+    medications: "",
+    notes: ""
+  });
+  
+  const [editPlanForm, setEditPlanForm] = useState({
+    goals: "",
+    medications: "",
+    notes: ""
+  });
+  
+  const [appointmentForm, setAppointmentForm] = useState({
+    patientId: "",
+    patientName: "",
+    date: "",
+    time: "",
+    type: "",
+    provider: "",
+    location: "",
+    notes: ""
+  });
+  
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  
   const togglePlanSelection = (id: number) => {
     setSelectedPlan(selectedPlan === id ? null : id);
   };
@@ -169,6 +227,150 @@ const ClinicianTreatment = () => {
     return "text-red-600";
   };
 
+  // Handler for creating a new care plan
+  const handleCreatePlan = async () => {
+    try {
+      await createCarePlan({
+        patientId: newPlanForm.patientId,
+        patientName: newPlanForm.patientName,
+        condition: newPlanForm.condition,
+        goals: newPlanForm.goals,
+        medications: newPlanForm.medications,
+        notes: newPlanForm.notes
+      });
+      
+      toast({
+        title: "Care Plan Created",
+        description: `New care plan for ${newPlanForm.patientName} has been created.`,
+      });
+      
+      setNewPlanDialog(false);
+      setNewPlanForm({
+        patientId: "",
+        patientName: "",
+        condition: "",
+        goals: "",
+        medications: "",
+        notes: ""
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create care plan. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handler for editing a care plan
+  const handleEditPlan = async () => {
+    if (!selectedPlan) return;
+    
+    try {
+      await updateCarePlan(selectedPlan, {
+        goals: editPlanForm.goals,
+        medications: editPlanForm.medications,
+        notes: editPlanForm.notes
+      });
+      
+      toast({
+        title: "Care Plan Updated",
+        description: "The care plan has been successfully updated.",
+      });
+      
+      setEditPlanDialog(false);
+      setEditPlanForm({
+        goals: "",
+        medications: "",
+        notes: ""
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update care plan. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handler for scheduling a new appointment
+  const handleScheduleAppointment = async () => {
+    try {
+      await scheduleAppointment({
+        patientId: appointmentForm.patientId,
+        patientName: appointmentForm.patientName,
+        date: appointmentForm.date,
+        time: appointmentForm.time,
+        type: appointmentForm.type,
+        provider: appointmentForm.provider,
+        location: appointmentForm.location,
+        notes: appointmentForm.notes
+      });
+      
+      toast({
+        title: "Appointment Scheduled",
+        description: `New appointment for ${appointmentForm.patientName} has been scheduled.`,
+      });
+      
+      setScheduleDialog(false);
+      setAppointmentForm({
+        patientId: "",
+        patientName: "",
+        date: "",
+        time: "",
+        type: "",
+        provider: "",
+        location: "",
+        notes: ""
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to schedule appointment. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handler for rescheduling an appointment
+  const handleRescheduleAppointment = async (appointmentId: number) => {
+    try {
+      await updateAppointmentStatus(String(appointmentId), "rescheduled");
+      
+      toast({
+        title: "Appointment Rescheduled",
+        description: "The appointment has been successfully rescheduled.",
+      });
+      
+      setRescheduleDialog(null);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to reschedule appointment. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handler for searching patient records
+  const handleSearch = async () => {
+    try {
+      const results = await searchPatients(searchQuery);
+      setSearchResults(results);
+      
+      toast({
+        title: "Search Complete",
+        description: `Found ${results.length} matching patient records.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to search patient records. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <AppLayout title="Treatment Planning">
       <div className="space-y-6">
@@ -180,10 +382,16 @@ const ClinicianTreatment = () => {
           
           <TabsContent value="careplans" className="space-y-4">
             <div className="flex justify-between items-center">
-              <p className="text-gray-500">
-                Create and manage treatment plans for patients
-              </p>
-              <Button>
+              <div className="flex space-x-2">
+                <p className="text-gray-500">
+                  Create and manage treatment plans for patients
+                </p>
+                <Button variant="outline" size="sm" onClick={() => setSearchDialog(true)}>
+                  <Search className="h-4 w-4 mr-1" />
+                  Search Records
+                </Button>
+              </div>
+              <Button onClick={() => setNewPlanDialog(true)}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 New Care Plan
               </Button>
@@ -238,7 +446,7 @@ const ClinicianTreatment = () => {
                         <CardTitle className="text-lg">
                           {carePlans.find(p => p.id === selectedPlan)?.patientName} - {carePlans.find(p => p.id === selectedPlan)?.condition}
                         </CardTitle>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={() => setEditPlanDialog(true)}>
                           <FileText className="mr-2 h-4 w-4" />
                           Edit Plan
                         </Button>
@@ -358,7 +566,7 @@ const ClinicianTreatment = () => {
               <p className="text-gray-500">
                 View and manage upcoming patient appointments
               </p>
-              <Button>
+              <Button onClick={() => setScheduleDialog(true)}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Schedule Appointment
               </Button>
@@ -403,8 +611,12 @@ const ClinicianTreatment = () => {
                           <p className="text-sm text-gray-500 mt-1">{appointment.location}</p>
                         </div>
                         <div className="flex gap-2">
-                          <Button size="sm" variant="outline">Reschedule</Button>
-                          <Button size="sm">View Details</Button>
+                          <Button size="sm" variant="outline" onClick={() => setRescheduleDialog(appointment.id)}>
+                            Reschedule
+                          </Button>
+                          <Button size="sm" onClick={() => setViewDetailsDialog(appointment.id)}>
+                            View Details
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -415,6 +627,448 @@ const ClinicianTreatment = () => {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* New Care Plan Dialog */}
+      <Dialog open={newPlanDialog} onOpenChange={setNewPlanDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Create New Care Plan</DialogTitle>
+            <DialogDescription>
+              Fill in the details to create a new treatment plan for a patient.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="patientId" className="text-right">
+                Patient ID
+              </Label>
+              <Input
+                id="patientId"
+                value={newPlanForm.patientId}
+                onChange={(e) => setNewPlanForm({...newPlanForm, patientId: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="patientName" className="text-right">
+                Patient Name
+              </Label>
+              <Input
+                id="patientName"
+                value={newPlanForm.patientName}
+                onChange={(e) => setNewPlanForm({...newPlanForm, patientName: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="condition" className="text-right">
+                Condition
+              </Label>
+              <Input
+                id="condition"
+                value={newPlanForm.condition}
+                onChange={(e) => setNewPlanForm({...newPlanForm, condition: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="goals" className="text-right">
+                Goals
+              </Label>
+              <Textarea
+                id="goals"
+                value={newPlanForm.goals}
+                onChange={(e) => setNewPlanForm({...newPlanForm, goals: e.target.value})}
+                className="col-span-3"
+                placeholder="Enter treatment goals, one per line"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="medications" className="text-right">
+                Medications
+              </Label>
+              <Textarea
+                id="medications"
+                value={newPlanForm.medications}
+                onChange={(e) => setNewPlanForm({...newPlanForm, medications: e.target.value})}
+                className="col-span-3"
+                placeholder="Enter medications, one per line"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="notes" className="text-right">
+                Notes
+              </Label>
+              <Textarea
+                id="notes"
+                value={newPlanForm.notes}
+                onChange={(e) => setNewPlanForm({...newPlanForm, notes: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNewPlanDialog(false)}>Cancel</Button>
+            <Button onClick={handleCreatePlan}>Create Plan</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Edit Care Plan Dialog */}
+      <Dialog open={editPlanDialog} onOpenChange={setEditPlanDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Edit Care Plan</DialogTitle>
+            <DialogDescription>
+              Update the treatment plan details.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="edit-goals" className="text-right">
+                Goals
+              </Label>
+              <Textarea
+                id="edit-goals"
+                value={editPlanForm.goals}
+                onChange={(e) => setEditPlanForm({...editPlanForm, goals: e.target.value})}
+                className="col-span-3"
+                placeholder="Enter updated treatment goals, one per line"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="edit-medications" className="text-right">
+                Medications
+              </Label>
+              <Textarea
+                id="edit-medications"
+                value={editPlanForm.medications}
+                onChange={(e) => setEditPlanForm({...editPlanForm, medications: e.target.value})}
+                className="col-span-3"
+                placeholder="Enter updated medications, one per line"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="edit-notes" className="text-right">
+                Notes
+              </Label>
+              <Textarea
+                id="edit-notes"
+                value={editPlanForm.notes}
+                onChange={(e) => setEditPlanForm({...editPlanForm, notes: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditPlanDialog(false)}>Cancel</Button>
+            <Button onClick={handleEditPlan}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Schedule Appointment Dialog */}
+      <Dialog open={scheduleDialog} onOpenChange={setScheduleDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Schedule New Appointment</DialogTitle>
+            <DialogDescription>
+              Fill in the details to schedule a new appointment.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="app-patientId" className="text-right">
+                Patient ID
+              </Label>
+              <Input
+                id="app-patientId"
+                value={appointmentForm.patientId}
+                onChange={(e) => setAppointmentForm({...appointmentForm, patientId: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="app-patientName" className="text-right">
+                Patient Name
+              </Label>
+              <Input
+                id="app-patientName"
+                value={appointmentForm.patientName}
+                onChange={(e) => setAppointmentForm({...appointmentForm, patientName: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="app-date" className="text-right">
+                Date
+              </Label>
+              <Input
+                id="app-date"
+                type="date"
+                value={appointmentForm.date}
+                onChange={(e) => setAppointmentForm({...appointmentForm, date: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="app-time" className="text-right">
+                Time
+              </Label>
+              <Input
+                id="app-time"
+                type="time"
+                value={appointmentForm.time}
+                onChange={(e) => setAppointmentForm({...appointmentForm, time: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="app-type" className="text-right">
+                Type
+              </Label>
+              <Select 
+                onValueChange={(value) => setAppointmentForm({...appointmentForm, type: value})}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select appointment type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="follow-up">Follow-up</SelectItem>
+                  <SelectItem value="initial">Initial Consultation</SelectItem>
+                  <SelectItem value="therapy">Therapy Session</SelectItem>
+                  <SelectItem value="lab-review">Lab Review</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="app-provider" className="text-right">
+                Provider
+              </Label>
+              <Input
+                id="app-provider"
+                value={appointmentForm.provider}
+                onChange={(e) => setAppointmentForm({...appointmentForm, provider: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="app-location" className="text-right">
+                Location
+              </Label>
+              <Select 
+                onValueChange={(value) => setAppointmentForm({...appointmentForm, location: value})}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="VA Medical Center - Primary Care">VA Medical Center - Primary Care</SelectItem>
+                  <SelectItem value="VA Medical Center - Cardiology">VA Medical Center - Cardiology</SelectItem>
+                  <SelectItem value="VA Medical Center - Mental Health">VA Medical Center - Mental Health</SelectItem>
+                  <SelectItem value="Virtual Visit">Virtual Visit</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="app-notes" className="text-right">
+                Notes
+              </Label>
+              <Textarea
+                id="app-notes"
+                value={appointmentForm.notes}
+                onChange={(e) => setAppointmentForm({...appointmentForm, notes: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setScheduleDialog(false)}>Cancel</Button>
+            <Button onClick={handleScheduleAppointment}>Schedule</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Reschedule Appointment Dialog */}
+      <Dialog open={rescheduleDialog !== null} onOpenChange={() => setRescheduleDialog(null)}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Reschedule Appointment</DialogTitle>
+            <DialogDescription>
+              Select a new date and time for this appointment.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="reschedule-date" className="text-right">
+                New Date
+              </Label>
+              <Input
+                id="reschedule-date"
+                type="date"
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="reschedule-time" className="text-right">
+                New Time
+              </Label>
+              <Input
+                id="reschedule-time"
+                type="time"
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="reschedule-reason" className="text-right">
+                Reason
+              </Label>
+              <Select>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="provider-unavailable">Provider Unavailable</SelectItem>
+                  <SelectItem value="patient-request">Patient Request</SelectItem>
+                  <SelectItem value="scheduling-conflict">Scheduling Conflict</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRescheduleDialog(null)}>Cancel</Button>
+            <Button onClick={() => rescheduleDialog && handleRescheduleAppointment(rescheduleDialog)}>
+              Confirm Reschedule
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* View Appointment Details Dialog */}
+      <Dialog open={viewDetailsDialog !== null} onOpenChange={() => setViewDetailsDialog(null)}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Appointment Details</DialogTitle>
+          </DialogHeader>
+          
+          {viewDetailsDialog !== null && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-medium text-lg">
+                  {upcomingAppointments.find(a => a.id === viewDetailsDialog)?.type} - {upcomingAppointments.find(a => a.id === viewDetailsDialog)?.patientName}
+                </h3>
+                <p className="text-sm text-gray-500">{upcomingAppointments.find(a => a.id === viewDetailsDialog)?.patientId}</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium">Date</p>
+                  <p className="text-sm">{upcomingAppointments.find(a => a.id === viewDetailsDialog)?.date}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Time</p>
+                  <p className="text-sm">{upcomingAppointments.find(a => a.id === viewDetailsDialog)?.time}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Provider</p>
+                  <p className="text-sm">{upcomingAppointments.find(a => a.id === viewDetailsDialog)?.provider}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Location</p>
+                  <p className="text-sm">{upcomingAppointments.find(a => a.id === viewDetailsDialog)?.location}</p>
+                </div>
+              </div>
+              
+              <div>
+                <p className="text-sm font-medium">Status</p>
+                <div className="mt-1">
+                  <Badge variant="outline" className={upcomingAppointments.find(a => a.id === viewDetailsDialog)?.status === "confirmed" ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"}>
+                    {upcomingAppointments.find(a => a.id === viewDetailsDialog)?.status}
+                  </Badge>
+                </div>
+              </div>
+              
+              <div>
+                <p className="text-sm font-medium">Notes</p>
+                <p className="text-sm bg-gray-50 p-3 mt-1 rounded-md">
+                  {upcomingAppointments.find(a => a.id === viewDetailsDialog)?.notes || "No notes available for this appointment."}
+                </p>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button onClick={() => setViewDetailsDialog(null)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Search Patient Records Dialog */}
+      <Dialog open={searchDialog} onOpenChange={setSearchDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Search Patient Records</DialogTitle>
+            <DialogDescription>
+              Enter a patient name, ID, or condition to search.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex items-center space-x-2">
+            <Input
+              placeholder="Search patients..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1"
+            />
+            <Button type="submit" onClick={handleSearch}>Search</Button>
+          </div>
+          
+          {searchResults.length > 0 && (
+            <div className="mt-4 max-h-[300px] overflow-auto">
+              <p className="text-sm text-gray-500 mb-2">Found {searchResults.length} results</p>
+              {searchResults.map((result, index) => (
+                <div key={index} className="p-3 border rounded-md mb-2 bg-gray-50">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="font-medium">{result.name}</p>
+                      <p className="text-xs text-gray-500">{result.id}</p>
+                    </div>
+                    <Button variant="link" size="sm" className="p-0 h-auto">View</Button>
+                  </div>
+                  <p className="text-sm mt-1">{result.conditions.join(', ')}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSearchDialog(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 };
