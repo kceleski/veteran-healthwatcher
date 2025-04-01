@@ -1,3 +1,4 @@
+
 import AppLayout from "@/components/layouts/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,10 +9,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const ClinicianVista = () => {
   const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false);
+  const [isSyncDialogOpen, setIsSyncDialogOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
+  const [syncProgress, setSyncProgress] = useState(0);
+  const [lastSyncTime, setLastSyncTime] = useState("Today, 10:15 AM");
+  const [syncStatus, setSyncStatus] = useState("Completed Successfully");
   const { toast } = useToast();
 
   const documents = [
@@ -57,6 +64,34 @@ const ClinicianVista = () => {
     setIsDocumentDialogOpen(true);
   };
 
+  const handleSyncClick = () => {
+    setIsSyncDialogOpen(true);
+    setSyncProgress(0);
+    
+    // Simulate sync progress
+    const interval = setInterval(() => {
+      setSyncProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            const now = new Date();
+            const formattedTime = format(now, "h:mm a");
+            setLastSyncTime(`Today, ${formattedTime}`);
+            setSyncStatus("Completed Successfully");
+            setIsSyncDialogOpen(false);
+            toast({
+              title: "Synchronization Complete",
+              description: "All patient data has been synchronized successfully.",
+              variant: "default",
+            });
+          }, 500);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 300);
+  };
+
   const handleImportDocument = () => {
     if (!selectedDocument) {
       toast({
@@ -99,7 +134,7 @@ const ClinicianVista = () => {
                 <Search className="mr-2 h-4 w-4" />
                 Search Patient Records
               </Button>
-              <Button className="flex-1" variant="outline">
+              <Button className="flex-1" variant="outline" onClick={handleSyncClick}>
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Synchronize Data
               </Button>
@@ -111,7 +146,7 @@ const ClinicianVista = () => {
             
             <div className="p-4 bg-blue-50 text-blue-800 rounded-md border border-blue-200">
               <p className="font-medium mb-1">System Status: Connected</p>
-              <p className="text-sm">Last synchronization completed successfully at 10:15 AM today.</p>
+              <p className="text-sm">Last synchronization completed successfully at {lastSyncTime.includes("Today") ? lastSyncTime.replace("Today, ", "") : lastSyncTime}.</p>
             </div>
           </div>
         </CardContent>
@@ -127,9 +162,9 @@ const ClinicianVista = () => {
               <div className="p-3 border border-gray-200 rounded-md">
                 <div className="flex justify-between">
                   <div className="font-medium">Full Data Sync</div>
-                  <div className="text-sm text-gray-500">Today, 10:15 AM</div>
+                  <div className="text-sm text-gray-500">{lastSyncTime}</div>
                 </div>
-                <div className="text-sm text-green-600">Completed Successfully</div>
+                <div className="text-sm text-green-600">{syncStatus}</div>
               </div>
               <div className="p-3 border border-gray-200 rounded-md">
                 <div className="flex justify-between">
@@ -186,6 +221,7 @@ const ClinicianVista = () => {
         </Card>
       </div>
 
+      {/* Document Import Dialog */}
       <Dialog open={isDocumentDialogOpen} onOpenChange={setIsDocumentDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -245,6 +281,45 @@ const ClinicianVista = () => {
               <Button onClick={handleImportDocument}>Import Document</Button>
             </div>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sync Dialog */}
+      <Dialog open={isSyncDialogOpen} onOpenChange={setIsSyncDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Synchronizing with VistA</DialogTitle>
+            <DialogDescription>
+              Please wait while we synchronize with the VistA Electronic Health Record System...
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-6">
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div 
+                className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
+                style={{ width: `${syncProgress}%` }}
+              ></div>
+            </div>
+            
+            <div className="text-center">
+              <p className="text-lg font-semibold">{syncProgress}%</p>
+              <p className="text-sm text-gray-500">
+                {syncProgress < 30 && "Establishing secure connection..."}
+                {syncProgress >= 30 && syncProgress < 60 && "Retrieving patient records..."}
+                {syncProgress >= 60 && syncProgress < 90 && "Processing medical data..."}
+                {syncProgress >= 90 && "Finalizing synchronization..."}
+              </p>
+            </div>
+            
+            <Alert className="bg-blue-50 border-blue-200">
+              <AlertCircle className="h-4 w-4 text-blue-500" />
+              <AlertTitle className="text-blue-700">Secure Synchronization</AlertTitle>
+              <AlertDescription className="text-blue-600">
+                All data is being transferred using end-to-end encryption following VA security protocols.
+              </AlertDescription>
+            </Alert>
+          </div>
         </DialogContent>
       </Dialog>
     </AppLayout>
