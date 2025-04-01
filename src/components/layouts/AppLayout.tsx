@@ -78,7 +78,11 @@ export default function AppLayout({ children, title, showNav = true }: AppLayout
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
               <Link to="/" className="flex items-center">
-                <span className="text-xl font-bold text-blue-600">VetGuardian</span>
+                <img 
+                  src="/lovable-uploads/25ca233b-4853-4a14-a3fb-3031eb713a4d.png" 
+                  alt="HealthProAssist Logo" 
+                  className="h-10" 
+                />
               </Link>
               {user && <RoleSwitcher />}
             </div>
