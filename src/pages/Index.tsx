@@ -23,6 +23,13 @@ const Index = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/lovable-uploads/25ca233b-4853-4a14-a3fb-3031eb713a4d.png" 
+              alt="HealthProAssist Logo" 
+              className="h-16"
+            />
+          </div>
           <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl mb-4">
             VetGuardian <span className="text-blue-600">Health</span>
           </h1>
