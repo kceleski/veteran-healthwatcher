@@ -76,9 +76,22 @@ const Index = () => {
         </div>
         
         <div className="text-center mt-12">
-          <p className="text-sm text-slate-500">
-            VetGuardian Health - VISN 8 Telehealth Solution - Powered by AVA AI
-          </p>
+          <div className="flex flex-col items-center">
+            <p className="text-sm text-slate-500 mb-2">
+              Powered by
+            </p>
+            <div className="flex items-center gap-2">
+              <img 
+                src="/lovable-uploads/25ca233b-4853-4a14-a3fb-3031eb713a4d.png" 
+                alt="HealthProAssist Logo" 
+                className="h-8" 
+              />
+              <span className="text-md font-semibold">HealthProAssist</span>
+            </div>
+            <p className="text-sm text-slate-500 mt-4">
+              VetGuardian Health - VISN 8 Telehealth Solution - Powered by AVA AI
+            </p>
+          </div>
         </div>
       </div>
     </div>
