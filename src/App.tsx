@@ -21,44 +21,48 @@ import ClinicianTreatment from "./pages/clinician/Treatment";
 import ClinicianAnalytics from "./pages/clinician/Analytics";
 import ClinicianMessages from "./pages/clinician/Messages";
 import ClinicianVista from "./pages/clinician/Vista";
+import React from "react";
 
-const queryClient = new QueryClient();
+const App = () => {
+  // Move the QueryClient instantiation inside the component
+  const queryClient = React.useMemo(() => new QueryClient(), []);
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            
-            {/* Veteran Routes */}
-            <Route path="/veteran/dashboard" element={<VeteranDashboard />} />
-            <Route path="/veteran/vitals" element={<VeteranVitals />} />
-            <Route path="/veteran/medications" element={<VeteranMedications />} />
-            <Route path="/veteran/symptoms" element={<VeteranSymptoms />} />
-            <Route path="/veteran/appointments" element={<VeteranAppointments />} />
-            <Route path="/veteran/messages" element={<VeteranMessages />} />
-            <Route path="/veteran/resources" element={<VeteranResources />} />
-            
-            {/* Clinician Routes */}
-            <Route path="/clinician/dashboard" element={<ClinicianDashboard />} />
-            <Route path="/clinician/patient/:id" element={<ClinicianPatient />} />
-            <Route path="/clinician/alerts" element={<ClinicianAlerts />} />
-            <Route path="/clinician/treatment" element={<ClinicianTreatment />} />
-            <Route path="/clinician/analytics" element={<ClinicianAnalytics />} />
-            <Route path="/clinician/messages" element={<ClinicianMessages />} />
-            <Route path="/clinician/vista" element={<ClinicianVista />} />
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              
+              {/* Veteran Routes */}
+              <Route path="/veteran/dashboard" element={<VeteranDashboard />} />
+              <Route path="/veteran/vitals" element={<VeteranVitals />} />
+              <Route path="/veteran/medications" element={<VeteranMedications />} />
+              <Route path="/veteran/symptoms" element={<VeteranSymptoms />} />
+              <Route path="/veteran/appointments" element={<VeteranAppointments />} />
+              <Route path="/veteran/messages" element={<VeteranMessages />} />
+              <Route path="/veteran/resources" element={<VeteranResources />} />
+              
+              {/* Clinician Routes */}
+              <Route path="/clinician/dashboard" element={<ClinicianDashboard />} />
+              <Route path="/clinician/patient/:id" element={<ClinicianPatient />} />
+              <Route path="/clinician/alerts" element={<ClinicianAlerts />} />
+              <Route path="/clinician/treatment" element={<ClinicianTreatment />} />
+              <Route path="/clinician/analytics" element={<ClinicianAnalytics />} />
+              <Route path="/clinician/messages" element={<ClinicianMessages />} />
+              <Route path="/clinician/vista" element={<ClinicianVista />} />
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
