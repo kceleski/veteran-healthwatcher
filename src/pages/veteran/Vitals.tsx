@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subDays, isToday, isYesterday, formatDistanceToNow } from "date-fns";
@@ -20,7 +19,8 @@ import {
   Clock, 
   Plus,
   Filter, 
-  Pulse
+  Pulse,
+  HeartPulse
 } from "lucide-react";
 import AppLayout from "@/components/layouts/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,24 +50,19 @@ import { VitalReading } from "@/lib/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Type for grouping vitals by day
 type GroupedVitals = {
   [key: string]: VitalReading[];
 };
 
-// Helper to format vitals data for charts
 const formatChartData = (vitals: VitalReading[], type: string) => {
-  // Filter by type and sort by timestamp
   const filteredVitals = vitals
     .filter(v => v.type === type)
     .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
   return filteredVitals.map(v => {
-    // Extract value for chart
     let value: number;
     if (typeof v.value === 'string') {
       if (type === 'blood_pressure') {
-        // Extract systolic pressure for charts
         value = parseInt(v.value.split('/')[0], 10);
       } else {
         value = parseFloat(v.value);
@@ -86,7 +81,6 @@ const formatChartData = (vitals: VitalReading[], type: string) => {
   });
 };
 
-// Helper to format datetime for display
 const formatDateTime = (dateTime: string) => {
   const date = new Date(dateTime);
   
@@ -110,19 +104,16 @@ const VeteranVitals = () => {
     value: "",
     unit: "",
   });
-  
-  // Fetch vitals data
+
   const { data: vitals, isLoading, refetch } = useQuery({
     queryKey: ['vitals', 'v-001', timeRange],
     queryFn: () => getVitalsForVeteran('v-001')
   });
 
-  // Process and group vitals by day
   useEffect(() => {
     if (vitals) {
       const grouped: GroupedVitals = {};
       
-      // Filter by time range
       const filteredVitals = vitals.filter(v => {
         const date = new Date(v.timestamp);
         const now = new Date();
@@ -137,7 +128,6 @@ const VeteranVitals = () => {
         return true;
       });
       
-      // Group by day
       filteredVitals.forEach(vital => {
         const day = format(new Date(vital.timestamp), 'yyyy-MM-dd');
         if (!grouped[day]) {
@@ -146,7 +136,6 @@ const VeteranVitals = () => {
         grouped[day].push(vital);
       });
       
-      // Sort each day's readings
       Object.keys(grouped).forEach(day => {
         grouped[day].sort((a, b) => 
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -157,7 +146,6 @@ const VeteranVitals = () => {
     }
   }, [vitals, timeRange]);
   
-  // Filter vitals based on active tab
   const getFilteredVitals = (dayVitals: VitalReading[]) => {
     if (activeTab === "all") {
       return dayVitals;
@@ -165,19 +153,16 @@ const VeteranVitals = () => {
     return dayVitals.filter(v => v.type === activeTab);
   };
 
-  // Prepare chart data
   const bloodPressureData = vitals ? formatChartData(vitals, 'blood_pressure') : [];
   const heartRateData = vitals ? formatChartData(vitals, 'heart_rate') : [];
   const temperatureData = vitals ? formatChartData(vitals, 'temperature') : [];
   const oxygenData = vitals ? formatChartData(vitals, 'oxygen') : [];
   const glucoseData = vitals ? formatChartData(vitals, 'glucose') : [];
 
-  // Handle form submission for new reading
   const handleAddReading = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      // Validate input
       if (!newReading.type || !newReading.value) {
         toast({
           title: "Missing Information",
@@ -187,25 +172,21 @@ const VeteranVitals = () => {
         return;
       }
       
-      // Create reading object
       const reading: Omit<VitalReading, 'id'> = {
         timestamp: new Date().toISOString(),
         type: newReading.type as any,
         value: newReading.value,
         unit: newReading.unit,
-        isNormal: true, // This would be calculated server-side in a real app
+        isNormal: true,
       };
       
-      // Add reading
       await addVitalReading('v-001', reading);
       
-      // Show success toast
       toast({
         title: "Reading Added",
         description: "Your vital sign reading has been recorded"
       });
       
-      // Reset form and close dialog
       setNewReading({
         type: "",
         value: "",
@@ -213,7 +194,6 @@ const VeteranVitals = () => {
       });
       setIsAddDialogOpen(false);
       
-      // Refresh data
       refetch();
       
     } catch (error) {
@@ -225,7 +205,6 @@ const VeteranVitals = () => {
     }
   };
   
-  // Set unit based on selected type
   const handleTypeChange = (value: string) => {
     setNewReading(prev => {
       let unit = "";
@@ -255,7 +234,6 @@ const VeteranVitals = () => {
     });
   };
   
-  // Render appropriate icon for vital type
   const getVitalIcon = (type: string) => {
     switch (type) {
       case 'blood_pressure':
@@ -265,7 +243,7 @@ const VeteranVitals = () => {
       case 'temperature':
         return <Thermometer className="h-5 w-5 text-amber-500" />;
       case 'oxygen':
-        return <Pulse className="h-5 w-5 text-blue-500" />;
+        return <HeartPulse className="h-5 w-5 text-blue-500" />;
       case 'glucose':
         return <Droplet className="h-5 w-5 text-purple-500" />;
       case 'weight':
@@ -358,7 +336,6 @@ const VeteranVitals = () => {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Blood Pressure Chart */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center text-lg">
@@ -407,7 +384,6 @@ const VeteranVitals = () => {
             </CardContent>
           </Card>
           
-          {/* Heart Rate Chart */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center text-lg">

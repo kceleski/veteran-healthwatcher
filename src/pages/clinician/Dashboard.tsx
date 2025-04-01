@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { getVeterans, getAllAlerts } from "@/lib/mockAPI";
-import { Alert, FilterList, Users, Activity, AlertCircle, Calendar, Clock, Search } from "lucide-react";
+import { BellRing, ListFilter, Users, Activity, AlertCircle, Calendar, Clock, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 const ClinicianDashboard = () => {
@@ -245,7 +244,7 @@ const ClinicianDashboard = () => {
       <Tabs defaultValue="alerts" className="mb-6">
         <TabsList className="mb-4">
           <TabsTrigger value="alerts" className="flex items-center">
-            <Alert className="mr-2 h-4 w-4" />
+            <BellRing className="mr-2 h-4 w-4" />
             Recent Alerts
           </TabsTrigger>
           <TabsTrigger value="activity" className="flex items-center">
