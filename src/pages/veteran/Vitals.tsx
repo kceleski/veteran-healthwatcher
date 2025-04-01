@@ -19,7 +19,6 @@ import {
   Clock, 
   Plus,
   Filter, 
-  Pulse,
   HeartPulse
 } from "lucide-react";
 import AppLayout from "@/components/layouts/AppLayout";
