@@ -75,7 +75,6 @@ export default function AppLayout({ children, title, showNav = true }: AppLayout
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-16">
@@ -97,7 +96,6 @@ export default function AppLayout({ children, title, showNav = true }: AppLayout
             </div>
             
             <div className="hidden md:flex items-center space-x-4">
-              {/* Notifications */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative">
@@ -125,7 +123,6 @@ export default function AppLayout({ children, title, showNav = true }: AppLayout
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              {/* User menu */}
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -167,7 +164,6 @@ export default function AppLayout({ children, title, showNav = true }: AppLayout
         </div>
       </header>
       
-      {/* Mobile navigation menu */}
       {showNav && mobileMenuOpen && (
         <div className="md:hidden bg-white border-b border-gray-200">
           <nav className="px-4 py-2">
@@ -190,9 +186,7 @@ export default function AppLayout({ children, title, showNav = true }: AppLayout
         </div>
       )}
       
-      {/* Main content */}
       <div className="flex-1 flex flex-col md:flex-row">
-        {/* Sidebar navigation */}
         {showNav && (
           <aside className="hidden md:block w-64 bg-white border-r border-gray-200 overflow-y-auto">
             <nav className="p-4 space-y-1">
@@ -214,7 +208,6 @@ export default function AppLayout({ children, title, showNav = true }: AppLayout
           </aside>
         )}
         
-        {/* Page content */}
         <main className="flex-1 overflow-y-auto bg-gray-50">
           <div className="container mx-auto px-4 py-6">
             {title && (
@@ -223,9 +216,8 @@ export default function AppLayout({ children, title, showNav = true }: AppLayout
             {children}
           </div>
           
-          {/* AVA AI Chatbot - positioned at bottom right */}
           <div className="fixed bottom-4 right-4 z-40">
-            <AvaAIChatbot label="Ask AVA for help" description="Your AI health assistant" />
+            <AvaAIChatbot />
           </div>
         </main>
       </div>
