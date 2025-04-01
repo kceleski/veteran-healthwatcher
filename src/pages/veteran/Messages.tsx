@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -21,7 +20,6 @@ import {
   Inbox,
   Mail,
   MessageSquare, 
-  PaperPlane,
   Search, 
   Send, 
   User, 
@@ -405,7 +403,7 @@ const VeteranMessages = () => {
                 "Sending..."
               ) : (
                 <>
-                  <PaperPlane className="mr-2 h-4 w-4" />
+                  <Send className="mr-2 h-4 w-4" />
                   Send Message
                 </>
               )}
