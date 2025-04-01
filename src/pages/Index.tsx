@@ -26,7 +26,7 @@ const Index = () => {
           <div className="flex justify-center mb-6">
             <img 
               src="/lovable-uploads/25ca233b-4853-4a14-a3fb-3031eb713a4d.png" 
-              alt="HealthProAssist Logo" 
+              alt="Logo" 
               className="h-16"
             />
           </div>
@@ -90,7 +90,7 @@ const Index = () => {
             <div className="flex items-center gap-2">
               <img 
                 src="/lovable-uploads/25ca233b-4853-4a14-a3fb-3031eb713a4d.png" 
-                alt="HealthProAssist Logo" 
+                alt="Logo" 
                 className="h-8" 
               />
             </div>

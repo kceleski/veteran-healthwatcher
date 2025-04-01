@@ -1,10 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { X, Send, Maximize2, Minimize2 } from "lucide-react";
+import { X, Send, Minimize2 } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 type ChatMessage = {
   sender: 'user' | 'ava';
@@ -16,6 +17,20 @@ type QuickResponse = {
   text: string;
   response: string;
 };
+
+type MoodOption = {
+  emoji: string;
+  label: string;
+  response: string;
+};
+
+const moodOptions: MoodOption[] = [
+  { emoji: "😊", label: "Great", response: "That's wonderful! It's great to hear you're feeling good today. Remember that maintaining a positive mood can help with overall health outcomes." },
+  { emoji: "🙂", label: "Good", response: "I'm glad you're feeling good today! Maintaining a positive outlook is beneficial for your health." },
+  { emoji: "😐", label: "Okay", response: "Thanks for sharing. Remember that it's normal to have neutral days. Is there anything specific on your mind that you'd like to discuss?" },
+  { emoji: "😕", label: "Not Great", response: "I'm sorry to hear you're not feeling great today. Would you like to talk about what's bothering you? Sometimes sharing can help lighten the load." },
+  { emoji: "😢", label: "Bad", response: "I'm sorry you're feeling bad today. Remember that your healthcare team is here to support you. Would you like me to provide some resources that might help?" },
+];
 
 const getVeteranResponses = (): QuickResponse[] => [
   { 
@@ -50,17 +65,74 @@ const getClinicianResponses = (): QuickResponse[] => [
 const AvaAIChatbot = () => {
   const { user } = useAuth();
   const [isMinimized, setIsMinimized] = useState(true);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      sender: 'ava',
-      text: `Hello ${user?.name}! I'm AVA, your AI health assistant. How can I help you today?`,
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
+  const [showMoodPrompt, setShowMoodPrompt] = useState(false);
+  const [hasCheckedMood, setHasCheckedMood] = useState(false);
   
   const isVeteran = user?.role === 'veteran';
   const quickResponses = isVeteran ? getVeteranResponses() : getClinicianResponses();
+
+  // Initialize chat with greeting and mood check when user appears
+  useEffect(() => {
+    if (user && messages.length === 0) {
+      const initialMessage: ChatMessage = {
+        sender: 'ava',
+        text: `Hello ${user.name}! I'm AVA, your AI health assistant.`,
+        timestamp: new Date()
+      };
+      
+      setMessages([initialMessage]);
+      
+      // Show mood prompt for veterans only
+      if (isVeteran) {
+        setShowMoodPrompt(true);
+      }
+    }
+  }, [user, isVeteran, messages.length]);
+
+  const handleMoodSelection = (mood: MoodOption) => {
+    // Add user mood message
+    const userMessage: ChatMessage = {
+      sender: 'user',
+      text: `I'm feeling ${mood.label} today ${mood.emoji}`,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Add AVA response to mood
+    setTimeout(() => {
+      const avaResponse: ChatMessage = {
+        sender: 'ava',
+        text: mood.response,
+        timestamp: new Date()
+      };
+      
+      // Add analytics insight based on mood
+      const insightMessage: ChatMessage = {
+        sender: 'ava',
+        text: getAnalyticsInsightBasedOnMood(mood.label),
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, avaResponse, insightMessage]);
+    }, 1000);
+    
+    setShowMoodPrompt(false);
+    setHasCheckedMood(true);
+  };
+
+  const getAnalyticsInsightBasedOnMood = (mood: string) => {
+    // Provide personalized insights based on mood
+    if (mood === "Great" || mood === "Good") {
+      return "Based on your health data, I've noticed your mood often improves after you've had a good night's sleep. Your sleep patterns have been more consistent this week!";
+    } else if (mood === "Okay") {
+      return "Looking at your data, I notice your blood pressure readings tend to be better on days when you report feeling better. Have you taken your blood pressure reading today?";
+    } else {
+      return "I've noticed a pattern in your health data where mood dips often correlate with days before your medication refill is due. Your next refill date is coming up in 3 days.";
+    }
+  };
 
   const handleQuickResponse = (response: QuickResponse) => {
     // Add user message
@@ -171,6 +243,39 @@ const AvaAIChatbot = () => {
                 </div>
               </div>
             ))}
+
+            {/* Mood check prompt */}
+            {showMoodPrompt && (
+              <Popover open={showMoodPrompt} onOpenChange={setShowMoodPrompt}>
+                <PopoverTrigger asChild>
+                  <div></div> {/* Empty div as trigger, automatically shown */}
+                </PopoverTrigger>
+                <PopoverContent className="w-80 bg-white p-4 rounded-lg shadow-md">
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <h4 className="font-medium">How are you feeling today?</h4>
+                      <p className="text-sm text-gray-500">
+                        Your mood can impact your health. Let me know so I can personalize my assistance.
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-5 gap-1">
+                      {moodOptions.map((mood) => (
+                        <Button
+                          key={mood.label}
+                          variant="ghost"
+                          className="flex flex-col items-center p-2 h-auto"
+                          onClick={() => handleMoodSelection(mood)}
+                        >
+                          <span className="text-2xl mb-1">{mood.emoji}</span>
+                          <span className="text-xs">{mood.label}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
           
           {/* Quick responses */}
