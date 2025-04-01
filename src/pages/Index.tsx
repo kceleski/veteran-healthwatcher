@@ -93,7 +93,6 @@ const Index = () => {
                 alt="HealthProAssist Logo" 
                 className="h-8" 
               />
-              <span className="text-md font-semibold">HealthProAssist</span>
             </div>
             <p className="text-sm text-slate-500 mt-4">
               VetGuardian Health - VISN 8 Telehealth Solution - Powered by AVA AI
