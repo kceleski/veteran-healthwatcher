@@ -1,25 +1,22 @@
 
-import { useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { login, isLoading } = useAuth();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    // Redirect to appropriate dashboard if already logged in
-    const userType = localStorage.getItem("userType");
-    if (userType === "veteran") {
-      navigate("/veteran/dashboard");
-    } else if (userType === "clinician") {
-      navigate("/clinician/dashboard");
-    }
-  }, [navigate]);
-
-  const handleLogin = (userType: "veteran" | "clinician") => {
-    localStorage.setItem("userType", userType);
-    navigate(`/${userType}/dashboard`);
+  const handleLogin = async (type: "veteran" | "clinician") => {
+    // Set a default username based on the selected role
+    const loginUsername = type === "veteran" ? "veteran_user" : "clinician_user";
+    await login(loginUsername, "password");
   };
 
   return (
@@ -50,8 +47,8 @@ const Index = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => handleLogin("veteran")} className="w-full">
-                Enter as Veteran
+              <Button onClick={() => handleLogin("veteran")} className="w-full" disabled={isLoading}>
+                {isLoading ? "Logging in..." : "Enter as Veteran"}
               </Button>
             </CardFooter>
           </Card>
@@ -71,8 +68,8 @@ const Index = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => handleLogin("clinician")} variant="secondary" className="w-full">
-                Enter as Clinician
+              <Button onClick={() => handleLogin("clinician")} variant="secondary" className="w-full" disabled={isLoading}>
+                {isLoading ? "Logging in..." : "Enter as Clinician"}
               </Button>
             </CardFooter>
           </Card>

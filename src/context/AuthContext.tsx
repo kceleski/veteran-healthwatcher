@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
@@ -15,6 +14,7 @@ type AuthContextType = {
   isLoading: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+  switchRole: (role: 'veteran' | 'clinician') => void;
   isAuthenticated: boolean;
 };
 
@@ -103,12 +103,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const switchRole = (role: 'veteran' | 'clinician') => {
+    if (!user) return;
+    
+    // Create a new user object with the updated role
+    const updatedUser = { 
+      ...user,
+      role,
+      // Update name based on role
+      name: role === 'veteran' ? 'James Wilson' : 'Dr. Sarah Johnson',
+      // Update avatar based on name initials
+      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${role === 'veteran' ? 'JW' : 'SJ'}`
+    };
+    
+    // Update localStorage
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    // Update state
+    setUser(updatedUser);
+    
+    toast({
+      title: "Role Switched",
+      description: `You're now viewing as ${role === 'veteran' ? 'Veteran' : 'Clinician'}`,
+      duration: 3000,
+    });
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
       isLoading,
       login,
       logout,
+      switchRole,
       isAuthenticated: !!user
     }}>
       {children}

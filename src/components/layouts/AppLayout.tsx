@@ -1,4 +1,3 @@
-
 import { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import RoleSwitcher from "@/components/RoleSwitcher";
 import { 
   Home, 
   Activity, 
@@ -76,10 +76,11 @@ export default function AppLayout({ children, title, showNav = true }: AppLayout
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
               <Link to="/" className="flex items-center">
                 <span className="text-xl font-bold text-blue-600">VetGuardian</span>
               </Link>
+              {user && <RoleSwitcher />}
             </div>
             
             <div className="md:hidden">
