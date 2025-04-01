@@ -1,4 +1,3 @@
-
 import {
   mockVeterans,
   generateMockVitals,
@@ -100,13 +99,29 @@ export const getAppointmentsForVeteran = async (veteranId: string): Promise<Appo
   return generateMockAppointments(veteranId);
 };
 
-export const scheduleAppointment = async (appointment: Omit<Appointment, 'id' | 'status'>): Promise<Appointment> => {
+// Update the scheduleAppointment to include patientId and other fields used in the Treatment component
+export const scheduleAppointment = async (appointment: {
+  patientId: string;
+  patientName: string;
+  date: string;
+  time: string;
+  type: string;
+  provider: string;
+  location: string;
+  notes?: string;
+}): Promise<Appointment> => {
   await simulateDelay();
   await simulateError();
   return {
     id: `appt-${Date.now()}`,
+    title: appointment.type,
+    providerName: appointment.provider,
+    department: appointment.location.includes('-') ? appointment.location.split('-')[1].trim() : 'General',
+    dateTime: new Date(`${appointment.date}T${appointment.time}`).toISOString(),
+    duration: 30, // Default duration
+    isVirtual: appointment.location.toLowerCase().includes('virtual'),
     status: 'scheduled',
-    ...appointment
+    notes: appointment.notes
   };
 };
 

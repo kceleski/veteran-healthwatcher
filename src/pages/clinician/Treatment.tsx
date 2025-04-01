@@ -133,7 +133,8 @@ const upcomingAppointments = [
     type: "Follow-up",
     provider: "Dr. Sarah Martinez",
     location: "VA Medical Center - Cardiology",
-    status: "confirmed"
+    status: "confirmed",
+    notes: "Regular check-up on blood pressure and medication efficacy."
   },
   {
     id: 2,
@@ -144,7 +145,8 @@ const upcomingAppointments = [
     type: "Lab Review",
     provider: "Dr. James Chen",
     location: "Virtual Visit",
-    status: "confirmed"
+    status: "confirmed",
+    notes: "Review recent A1C results and adjust diabetes care plan if needed."
   },
   {
     id: 3,
@@ -155,7 +157,8 @@ const upcomingAppointments = [
     type: "Therapy Session",
     provider: "Dr. Lisa Wong",
     location: "VA Medical Center - Mental Health",
-    status: "pending"
+    status: "pending",
+    notes: "Weekly therapy session focusing on managing anxiety triggers."
   }
 ];
 
