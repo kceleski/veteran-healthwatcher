@@ -1,10 +1,85 @@
-
 import AppLayout from "@/components/layouts/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Database, RefreshCw, FileText, Search } from "lucide-react";
+import { Database, RefreshCw, FileText, Search, FileImage, FileAudio, CheckCircle, AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 const ClinicianVista = () => {
+  const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const documents = [
+    {
+      id: "doc1",
+      name: "Patient Medical History.pdf",
+      type: "PDF",
+      size: "2.4 MB",
+      date: "May 15, 2023",
+      icon: <FileText className="h-8 w-8 text-red-500" />,
+      security: "Restricted"
+    },
+    {
+      id: "doc2",
+      name: "Chest X-Ray Results.jpg",
+      type: "Image",
+      size: "8.1 MB",
+      date: "Jun 22, 2023",
+      icon: <FileImage className="h-8 w-8 text-blue-500" />,
+      security: "Sensitive"
+    },
+    {
+      id: "doc3",
+      name: "Cardiology Consultation.pdf",
+      type: "PDF",
+      size: "1.7 MB",
+      date: "Jul 10, 2023",
+      icon: <FileText className="h-8 w-8 text-red-500" />,
+      security: "Restricted"
+    },
+    {
+      id: "doc4",
+      name: "Recorded Session Notes.mp3",
+      type: "Audio",
+      size: "5.3 MB",
+      date: "Aug 3, 2023",
+      icon: <FileAudio className="h-8 w-8 text-green-500" />,
+      security: "Confidential"
+    }
+  ];
+
+  const handleImportClick = () => {
+    setIsDocumentDialogOpen(true);
+  };
+
+  const handleImportDocument = () => {
+    if (!selectedDocument) {
+      toast({
+        title: "Selection Required",
+        description: "Please select a document to import",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const documentName = documents.find(doc => doc.id === selectedDocument)?.name;
+    
+    setIsDocumentDialogOpen(false);
+    
+    toast({
+      title: "Document Imported Successfully",
+      description: `${documentName} has been imported from VistA`,
+      variant: "default"
+    });
+    
+    setTimeout(() => setSelectedDocument(null), 500);
+  };
+
   return (
     <AppLayout title="VistA Integration">
       <Card className="mb-6">
@@ -28,7 +103,7 @@ const ClinicianVista = () => {
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Synchronize Data
               </Button>
-              <Button className="flex-1" variant="outline">
+              <Button className="flex-1" variant="outline" onClick={handleImportClick}>
                 <FileText className="mr-2 h-4 w-4" />
                 Import Documents
               </Button>
@@ -110,6 +185,68 @@ const ClinicianVista = () => {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={isDocumentDialogOpen} onOpenChange={setIsDocumentDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Import Documents from VistA</DialogTitle>
+            <DialogDescription>
+              Select documents to import from the VistA Electronic Health Record System.
+              All transfers are encrypted and secure.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <div className="rounded-md border border-blue-100 bg-blue-50 p-2 mb-4">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-5 w-5 text-blue-500 mt-0.5" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium">Security Notice</p>
+                  <p>All document transfers comply with VA security protocols and HIPAA regulations.</p>
+                </div>
+              </div>
+            </div>
+            
+            <RadioGroup value={selectedDocument || ""} onValueChange={setSelectedDocument}>
+              <div className="space-y-3">
+                {documents.map(doc => (
+                  <div 
+                    key={doc.id} 
+                    className={`flex items-center space-x-3 border p-3 rounded-md ${
+                      selectedDocument === doc.id ? "border-blue-500 bg-blue-50" : "border-gray-200"
+                    }`}
+                  >
+                    <RadioGroupItem value={doc.id} id={doc.id} />
+                    <Label htmlFor={doc.id} className="flex items-center flex-1 cursor-pointer">
+                      <div className="mr-3">{doc.icon}</div>
+                      <div className="flex-1">
+                        <div className="font-medium">{doc.name}</div>
+                        <div className="text-sm text-gray-500">
+                          {doc.type} • {doc.size} • {doc.date}
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="ml-2 bg-amber-50 text-amber-800 border-amber-200">
+                        {doc.security}
+                      </Badge>
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </RadioGroup>
+          </div>
+          
+          <DialogFooter className="flex items-center justify-between sm:justify-between">
+            <Button variant="outline" onClick={() => setIsDocumentDialogOpen(false)}>
+              Cancel
+            </Button>
+            <div className="flex items-center">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-1.5" />
+              <span className="text-xs text-green-600 mr-4">Secure Connection</span>
+              <Button onClick={handleImportDocument}>Import Document</Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 };
