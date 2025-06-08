@@ -76,7 +76,7 @@ const Index = () => {
             </CardContent>
             <CardFooter>
               <Button onClick={() => handleLogin("clinician")} variant="secondary" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Enter as Clinician"}
+                {isLoading ? "Logging in..." : "Enter as VSO"}
               </Button>
             </CardFooter>
           </Card>
