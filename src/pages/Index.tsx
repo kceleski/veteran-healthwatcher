@@ -31,10 +31,10 @@ const Index = () => {
             />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl mb-4">
-            VetGuardian <span className="text-primary">Health</span>
+            HealthProAssist <span className="text-primary">Vet</span>
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Advanced telehealth monitoring powered by AVA AI, helping veterans live healthier lives through continuous health tracking and early intervention.
+            Advanced tool calls powered by Ranger AI, helping veterans live healthier lives through accessibility and empathy.
           </p>
         </div>
 
@@ -43,7 +43,7 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="text-2xl">Veterans Portal</CardTitle>
               <CardDescription>
-                Access your health data, manage appointments, and stay connected with your care team.
+                Access your documents, manage appointments, and stay ahead of the chaos.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -62,9 +62,9 @@ const Index = () => {
 
           <Card className="shadow-md hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle className="text-2xl">Clinicians Portal</CardTitle>
+              <CardTitle className="text-2xl">VSO Portal</CardTitle>
               <CardDescription>
-                Monitor your patients, review health trends, and manage care plans efficiently.
+                Monitor your clients, review trends, and manage plans efficiently.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -95,7 +95,7 @@ const Index = () => {
               />
             </div>
             <p className="text-sm text-slate-500 mt-4">
-              VetGuardian Health - VISN 8 Telehealth Solution - Powered by AVA AI
+              HealthProAssist Vet -- Powered by Ranger AI
             </p>
           </div>
         </div>
