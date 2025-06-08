@@ -375,11 +375,11 @@ const ClinicianDashboard = () => {
                 <div className="p-4 border border-gray-200 rounded-md">
                   <div className="flex items-center gap-2">
                     <Activity className="h-5 w-5 text-blue-500" />
-                    <span className="font-medium">Vitals Recorded</span>
+                    <span className="font-medium">Needs Recorded</span>
                     <span className="text-sm text-gray-500">Today at 9:35 AM</span>
                   </div>
                   <p className="text-sm mt-1">
-                    <span className="font-medium">James Wilson</span> recorded blood pressure reading of 142/86 mmHg
+                    <span className="font-medium">James Wilson</span> recorded risk of homelessness increased.
                   </p>
                 </div>
                 
@@ -401,7 +401,7 @@ const ClinicianDashboard = () => {
                     <span className="text-sm text-gray-500">Yesterday at 10:30 AM</span>
                   </div>
                   <p className="text-sm mt-1">
-                    <span className="font-medium">Patricia Davis</span> reported increased headache severity (4/5) and frequency
+                    <span className="font-medium">Patricia Davis</span> reported increased panic attack severity (4/5) and frequency
                   </p>
                 </div>
                 
